@@ -32,11 +32,25 @@ public class PersonController {
         this.persons.add(p);
     }
 
+    // GetMapping volledige list return
     @GetMapping
     //Response entity is een hulpmiddel om vanuit je code (vanuit je endpoint) iets te retourneren naar de client. Je zowel een body terug geven als een Http-status.
     //HttpStatus.OK is gelijk aan code 200
     public ResponseEntity<List<Person>> getPersons(){
         return new ResponseEntity<>(persons, HttpStatus.OK);
+    }
+
+
+    //GetMapping een enkel persoon return
+    //voeg een GET methode ('/persons') toe die op basis van een index(int) de zoveelste persoon uit dde lijst retourneert (via arraylist.get(). als die aanwezig is retourneer je het als JSON. Zoek zelf uit welke HTT status je moet retourneren (resource gevonden / niet gevonden).
+    @GetMapping("/{id}")
+    public ResponseEntity<Person> getPerson(@PathVariable int id) {
+        if (id >= 0 && id < persons.size()) {
+            Person p = persons.get(id);
+            return new ResponseEntity<>(p, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
     }
 
     //om vanuit postman personen toe te voegen gebruiken we post mapping, ook hier hoef je geen pad toe te voegen omdat je dat in de @RequestMapping("/persons") hebt gemaakt
@@ -49,6 +63,7 @@ public class PersonController {
         return new ResponseEntity<>(p, HttpStatus.CREATED);
     }
 
+
     //wijzigingen aanbrengen, aan je pad een id toevoegen, zodat de code weet welk element er moet worden aangepast
     @PutMapping("/{id}")
     public ResponseEntity<Person> updatePerson(@RequestBody Person p, @PathVariable int id) {
@@ -60,4 +75,16 @@ public class PersonController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deletePerson(@PathVariable int id){
+        if (id >= 0 && id < persons.size()){
+            persons.remove(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }
